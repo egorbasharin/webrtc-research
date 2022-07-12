@@ -32,7 +32,7 @@ function listener(message) {
             onCreateSessionDescriptionError
         );
         return;
-    } else if (message.candidate) {
+    } else if (message.ice_candidate) {
         console.log(`remote ICE candidate: ${msg.candidate}`)
         pc.addIceCandidate(msg.candidate)
             .then(
@@ -41,6 +41,8 @@ function listener(message) {
             );
         return;
     }
+
+    console.error(`Unhandled message: ${message}`)
 }
 
 function startSender() {
