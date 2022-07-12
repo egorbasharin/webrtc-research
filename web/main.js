@@ -10,32 +10,51 @@ class SignalingChannel {
         this.socket.connect()
     }
 
-    addEventListener(event, eventHandler) {
-        this.socket.on(event, eventHandler)
+    EVENT = 'message'
+
+    addListener(listener) {
+        this.socket.on(EVENT, listener)
     }
 
     send(msg) {
-        this.socket.emit('message', msg)
+        this.socket.emit(EVENT, msg)
+    }
+}
+
+function listener(msg) {
+    if (message.answer) {
+        pc.setRemoteDescription(new RTCSessionDescription(message.answer));
+        return;
+    } else if (message.offer) {
+        pc.setRemoteDescription(new RTCSessionDescription(message.offer));
+        pc.createAnswer().then(
+            gotAnswer,
+            onCreateSessionDescriptionError
+        );
+        return;
+    } else if (message.candidate) {
+        console.log(`remote ICE candidate: ${msg.candidate}`)
+        pc.addIceCandidate(msg.candidate)
+            .then(
+                onAddIceCandidateSuccess,
+                onAddIceCandidateError
+            );
+        return;
     }
 }
 
 function startSender() {
     const config = null
-    pc = new RTCPeerConnection(config)
 
-    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
-    signalingChannel.addEventListener('message', async message => {
-        if (message.answer) {
-            pc.setRemoteDescription(new RTCSessionDescription(message.answer));
-        }
-    });
+    pc = new RTCPeerConnection(config)
+    pc.onicecandidate = onIceCandidate;
 
     dataChannel = pc.createDataChannel('data-channel');
     dataChannel.onopen = onSendChannelStateChange;
     dataChannel.onclose = onSendChannelStateChange;
 
-    pc.onicecandidate = onIceCandidate;
-    signalingChannel.addEventListener('ice_candidate', addIceCandidate);
+    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
+    signalingChannel.addListener(listener);
 
     pc.createOffer().then(
         gotOffer,
@@ -57,21 +76,11 @@ function startReceiver() {
     const config = null
     pc = new RTCPeerConnection(config)
     
-    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
-    signalingChannel.addEventListener('message', async message => {
-        if (message.offer) {
-            pc.setRemoteDescription(new RTCSessionDescription(message.offer));
-            pc.createAnswer().then(
-                gotAnswer,
-                onCreateSessionDescriptionError
-            );
-        }
-    });
-
     pc.onicecandidate = onIceCandidate;
-    signalingChannel.addEventListener('ice_candidate', addIceCandidate);
-
     pc.ondatachannel = onReceiveDataChannel;
+
+    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
+    signalingChannel.addListener(listener);
 }
 
 function gotAnswer(desc) {
@@ -98,17 +107,6 @@ function onIceCandidate(e) {
 function onConnectionStateChanged(e) {
     if (pc.connectionState === 'connected') {
         console.log('Peers connected!!!')
-    }
-}
-
-function addIceCandidate(msg) {
-    if (msg.candidate) {
-        console.log(`remote ICE candidate: ${msg.candidate}`)
-        pc.addIceCandidate(msg.candidate)
-            .then(
-                onAddIceCandidateSuccess,
-                onAddIceCandidateError
-            );
     }
 }
 
