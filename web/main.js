@@ -21,7 +21,7 @@ class SignalingChannel {
     }
 }
 
-function listener(msg) {
+function listener(message) {
     if (message.answer) {
         pc.setRemoteDescription(new RTCSessionDescription(message.answer));
         return;
