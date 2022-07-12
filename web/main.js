@@ -52,8 +52,8 @@ function startSender() {
     pc.onicecandidate = onIceCandidate;
 
     dataChannel = pc.createDataChannel('data-channel');
-    dataChannel.onopen = onSendChannelStateChange;
-    dataChannel.onclose = onSendChannelStateChange;
+    dataChannel.onopen = onDataChannelStateChanged;
+    dataChannel.onclose = onDataChannelStateChanged;
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
     signalingChannel.addListener(listener);
@@ -112,7 +112,7 @@ function onConnectionStateChanged(e) {
     }
 }
 
-function onSendChannelStateChange() {
+function onDataChannelStateChanged() {
     const readyState = dataChannel.readyState;
     console.log(`data channel state: ${readyState}`)
 }
@@ -125,6 +125,6 @@ function onReceiveDataChannel(event) {
     console.log('onReceiveDataChannel');
     dataChannel = event.channel;
     dataChannel.onmessage = onReceiveMessage;
-    dataChannel.onopen = onReceiveChannelStateChange;
-    dataChannel.onclose = onReceiveChannelStateChange;
+    dataChannel.onopen = onDataChannelStateChanged;
+    dataChannel.onclose = onDataChannelStateChanged;
 }
