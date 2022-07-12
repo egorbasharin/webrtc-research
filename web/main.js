@@ -33,8 +33,8 @@ function listener(message) {
         );
         return;
     } else if (message.ice_candidate) {
-        console.log(`remote ICE candidate: ${msg.candidate}`)
-        pc.addIceCandidate(msg.candidate)
+        console.log(`remote ICE candidate: ${message.candidate}`)
+        pc.addIceCandidate(message.candidate)
             .then(
                 onAddIceCandidateSuccess,
                 onAddIceCandidateError
