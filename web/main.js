@@ -25,7 +25,7 @@ function startSender() {
 
     signalingChannel.addEventListener('message', async message => {
         if (message.answer) {
-            pc.setRemoteDescription(new RTCSessionDescription(message.anwser));
+            pc.setRemoteDescription(new RTCSessionDescription(message.answer));
         }
     });
 
@@ -58,6 +58,7 @@ function startReceiver() {
             );
         }
     });
+
 }
 
 function gotAnswer(desc) {

@@ -13,7 +13,7 @@ async def connect(sid, environ):
     sio.enter_room(sid, ROOM)
 
 @sio.event
-def disconnect(sid, room):
+def disconnect(sid):
     print(f'Disconnect {sid} from room {ROOM}')
     sio.leave_room(sid, ROOM)
 
