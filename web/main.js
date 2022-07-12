@@ -10,14 +10,14 @@ class SignalingChannel {
         this.socket.connect()
     }
 
-    EVENT = 'message'
+    static EVENT = 'message'
 
     addListener(listener) {
-        this.socket.on(EVENT, listener)
+        this.socket.on(SignalingChannel.EVENT, listener)
     }
 
     send(msg) {
-        this.socket.emit(EVENT, msg)
+        this.socket.emit(SignalingChannel.EVENT, msg)
     }
 }
 

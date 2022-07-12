@@ -19,13 +19,8 @@ def disconnect(sid):
 
 @sio.event
 async def message(sid, msg):
-    print(f'Message from {sid}: {msg}')
+    print(f'Message from {sid}: {msg}\n{"-"*20}')
     await sio.emit('message', msg, room=ROOM, skip_sid=sid)
-
-@sio.event
-async def ice_candidate(sid, data):
-    print(f'ICE candidate from {sid}: {data}')
-    await sio.emit('ice_candidate', data, room=ROOM, skip_sid=sid)
 
 if __name__ == '__main__':
     web.run_app(app, port=11112)
