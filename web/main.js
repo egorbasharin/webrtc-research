@@ -1,4 +1,4 @@
-const SIGNALING_SERVER_URL = 'your_url:11112'
+const SIGNAL_SERVER_URL = new URLSearchParams(window.location.search).get('signal_server')
 let pc;
 let signalingChannel;
 
@@ -21,7 +21,7 @@ function startSender() {
     const config = null
     pc = new RTCPeerConnection(config)
 
-    signalingChannel = new SignalingChannel(SIGNALING_SERVER_URL)
+    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
 
     signalingChannel.addEventListener('message', async message => {
         if (message.answer) {
@@ -48,7 +48,7 @@ function onCreateSessionDescriptionError(error) {
 function startReceiver() {
     const config = null
     pc = new RTCPeerConnection(config)
-    signalingChannel = new SignalingChannel(SIGNALING_SERVER_URL);
+    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
     signalingChannel.addEventListener('message', async message => {
         if (message.offer) {
             pc.setRemoteDescription(new RTCSessionDescription(message.offer));
