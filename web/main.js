@@ -1,5 +1,7 @@
 const SIGNAL_SERVER_URL = new URLSearchParams(window.location.search).get('signal_server')
+
 let pc;
+let dataChannel;
 let signalingChannel;
 
 class SignalingChannel {
@@ -27,6 +29,10 @@ function startSender() {
             pc.setRemoteDescription(new RTCSessionDescription(message.answer));
         }
     });
+
+    dataChannel = pc.createDataChannel('data-channel');
+    dataChannel.onopen = onSendChannelStateChange;
+    dataChannel.onclose = onSendChannelStateChange;
 
     pc.onicecandidate = onIceCandidate;
     signalingChannel.addEventListener('ice_candidate', addIceCandidate);
@@ -64,6 +70,8 @@ function startReceiver() {
 
     pc.onicecandidate = onIceCandidate;
     signalingChannel.addEventListener('ice_candidate', addIceCandidate);
+
+    pc.ondatachannel = onReceiveDataChannel;
 }
 
 function gotAnswer(desc) {
@@ -87,6 +95,12 @@ function onIceCandidate(e) {
     }
 }
 
+function onConnectionStateChanged(e) {
+    if (pc.connectionState === 'connected') {
+        console.log('Peers connected!!!')
+    }
+}
+
 function addIceCandidate(msg) {
     if (msg.candidate) {
         console.log(`remote ICE candidate: ${msg.candidate}`)
@@ -96,4 +110,21 @@ function addIceCandidate(msg) {
                 onAddIceCandidateError
             );
     }
+}
+
+function onSendChannelStateChange() {
+    const readyState = dataChannel.readyState;
+    console.log(`data channel state: ${readyState}`)
+}
+
+function onReceiveMessage(event) {
+    console.log(`Received Message: ${event.data}`);
+}
+
+function onReceiveDataChannel(event) {
+    console.log('onReceiveDataChannel');
+    dataChannel = event.channel;
+    dataChannel.onmessage = onReceiveMessage;
+    dataChannel.onopen = onReceiveChannelStateChange;
+    dataChannel.onclose = onReceiveChannelStateChange;
 }
