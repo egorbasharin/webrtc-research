@@ -45,7 +45,7 @@ function listener(message) {
     console.error(`Unhandled message: ${message}`)
 }
 
-const config = {'iceServers': [{'urls': 'stun:goma.avp.ru:3478'}]}
+const config = null
 
 function startSender() {
     pc = new RTCPeerConnection(config)
