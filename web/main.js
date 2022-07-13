@@ -45,9 +45,9 @@ function listener(message) {
     console.error(`Unhandled message: ${message}`)
 }
 
-function startSender() {
-    const config = null
+const config = {'iceServers': [{'urls': 'stun:goma.avp.ru:3478'}]}
 
+function startSender() {
     pc = new RTCPeerConnection(config)
     pc.onicecandidate = onIceCandidate;
 
@@ -75,7 +75,6 @@ function onCreateSessionDescriptionError(error) {
 }
 
 function startReceiver() {
-    const config = null
     pc = new RTCPeerConnection(config)
     
     pc.onicecandidate = onIceCandidate;
