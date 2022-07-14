@@ -33,8 +33,9 @@ function listener(message) {
         );
         return;
     } else if (message.ice_candidate) {
-        console.log(`remote ICE candidate: ${message.ice_candidate}`)
-        pc.addIceCandidate(message.ice_candidate)
+        icec = message.ice_candidate
+        console.log(`remote ICE candidate: ${icec ? icec.candidate : '(null)'}`)
+        pc.addIceCandidate(icec)
             .then(
                 onAddIceCandidateSuccess,
                 onAddIceCandidateError
