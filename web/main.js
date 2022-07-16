@@ -56,7 +56,7 @@ function startSender() {
     dataChannel.onopen = onDataChannelStateChanged;
     dataChannel.onclose = onDataChannelStateChanged;
 
-    const localStream = await navigator.mediaDevices.getDisplayMedia();
+    const localStream = navigator.mediaDevices.getDisplayMedia();
     localStream.getTracks().forEach(track => {
         console.log(`Add new track: ${track}`)
         pc.addTrack(track, localStream);
