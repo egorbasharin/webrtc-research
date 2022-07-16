@@ -57,9 +57,9 @@ function prepareSender() {
         onErrorHandle
     )
 
-    // dataChannel = pc.createDataChannel('data-channel');
-    // dataChannel.onopen = onDataChannelStateChanged;
-    // dataChannel.onclose = onDataChannelStateChanged;
+    dataChannel = pc.createDataChannel('data-channel');
+    dataChannel.onopen = onDataChannelStateChanged;
+    dataChannel.onclose = onDataChannelStateChanged;
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
     signalingChannel.addListener(listener);
@@ -98,7 +98,7 @@ function startReceiver() {
     pc.ontrack = onReceiveTrack;
 
     pc.onicecandidate = onIceCandidate;
-    // pc.ondatachannel = onReceiveDataChannel;
+    pc.ondatachannel = onReceiveDataChannel;
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
     signalingChannel.addListener(listener);
