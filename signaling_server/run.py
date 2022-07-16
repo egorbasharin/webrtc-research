@@ -25,5 +25,5 @@ async def message(sid, msg):
 
 if __name__ == '__main__':
     ssl_context = ssl.SSLContext()
-    ssl_context.load_cert_chain(certfile="../web/cert.pem", keyfile="../web/key.pem")
+    ssl_context.load_cert_chain("../web/cert.pem", "../web/key.pem")
     web.run_app(app, port=11112, ssl_context=ssl_context)

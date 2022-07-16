@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
-PORT=8000
-python3 -m http.server $PORT
+# pip install twisted
+# pip install pyOpenSSL
+# pip install service_identity
+twistd -n web --path=./ --https=4443 -c cert.pem -k key.pem

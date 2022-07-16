@@ -29,7 +29,7 @@ function listener(message) {
         pc.setRemoteDescription(new RTCSessionDescription(message.offer));
         pc.createAnswer().then(
             gotAnswer,
-            onCreateSessionDescriptionError
+            onErrorHandle
         );
         return;
     } else if (message.ice_candidate) {
@@ -56,19 +56,28 @@ function startSender() {
     dataChannel.onopen = onDataChannelStateChanged;
     dataChannel.onclose = onDataChannelStateChanged;
 
-    const localStream = navigator.mediaDevices.getDisplayMedia();
-    localStream.getTracks().forEach(track => {
-        console.log(`Add new track: ${track}`)
-        pc.addTrack(track, localStream);
-    });
+    navigator.mediaDevices.getDisplayMedia().then(
+        onReceivedDisplayStream,
+        onErrorHandle
+    )
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
     signalingChannel.addListener(listener);
 
     pc.createOffer().then(
         gotOffer,
-        onCreateSessionDescriptionError
+        onErrorHandle
     )
+}
+
+function onReceivedDisplayStream(stream) {
+    const video = document.querySelector('#remoteVideo');
+    video.srcObject = stream;
+
+    stream.getTracks().forEach(track => {
+        console.log(`Add new track: ${track}`)
+        pc.addTrack(track, localStream);
+    });
 }
 
 function gotOffer(desc) {
@@ -77,7 +86,7 @@ function gotOffer(desc) {
   signalingChannel.send({'offer' : desc});
 }
         
-function onCreateSessionDescriptionError(error) {
+function onErrorHandle(error) {
   console.log('Failed to create session description: ' + error.toString());
 }
 
