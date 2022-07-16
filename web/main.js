@@ -1,4 +1,4 @@
-const SIGNAL_SERVER_URL = new URLSearchParams(window.location.search).get('signal_server')
+const SIGNAL_SERVER_URL = "goma.avp.ru:11112"
 
 let pc;
 let dataChannel;
