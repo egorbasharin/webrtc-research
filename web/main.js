@@ -56,6 +56,12 @@ function startSender() {
     dataChannel.onopen = onDataChannelStateChanged;
     dataChannel.onclose = onDataChannelStateChanged;
 
+    const localStream = await navigator.mediaDevices.getDisplayMedia();
+    localStream.getTracks().forEach(track => {
+        console.log(`Add new track: ${track}`)
+        pc.addTrack(track, localStream);
+    });
+
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
     signalingChannel.addListener(listener);
 
@@ -81,8 +87,18 @@ function startReceiver() {
     pc.onicecandidate = onIceCandidate;
     pc.ondatachannel = onReceiveDataChannel;
 
+    pc.ontrack = onReceiveTrack;
+
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
     signalingChannel.addListener(listener);
+}
+
+function onReceiveTrack(event) {
+    console.log('Track received');
+
+    const remoteVideo = document.querySelector("#remoteVideo");
+    const [remoteStream] = event.streams;
+    remoteVideo.srcObject = remoteStream;
 }
 
 function gotAnswer(desc) {
