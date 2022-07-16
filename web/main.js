@@ -52,14 +52,14 @@ function startSender() {
     pc = new RTCPeerConnection(config)
     pc.onicecandidate = onIceCandidate;
 
-    dataChannel = pc.createDataChannel('data-channel');
-    dataChannel.onopen = onDataChannelStateChanged;
-    dataChannel.onclose = onDataChannelStateChanged;
-
     navigator.mediaDevices.getDisplayMedia().then(
         onReceivedDisplayStream,
         onErrorHandle
     )
+
+    dataChannel = pc.createDataChannel('data-channel');
+    dataChannel.onopen = onDataChannelStateChanged;
+    dataChannel.onclose = onDataChannelStateChanged;
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
     signalingChannel.addListener(listener);
@@ -93,10 +93,10 @@ function onErrorHandle(error) {
 function startReceiver() {
     pc = new RTCPeerConnection(config)
     
+    pc.ontrack = onReceiveTrack;
+
     pc.onicecandidate = onIceCandidate;
     pc.ondatachannel = onReceiveDataChannel;
-
-    pc.ontrack = onReceiveTrack;
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
     signalingChannel.addListener(listener);
