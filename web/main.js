@@ -48,7 +48,7 @@ function listener(message) {
 
 const config = null
 
-function startSender() {
+function prepareSender() {
     pc = new RTCPeerConnection(config)
     pc.onicecandidate = onIceCandidate;
 
@@ -63,7 +63,9 @@ function startSender() {
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
     signalingChannel.addListener(listener);
+}
 
+function startSender() {
     pc.createOffer().then(
         gotOffer,
         onErrorHandle
