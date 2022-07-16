@@ -76,7 +76,7 @@ function onReceivedDisplayStream(stream) {
 
     stream.getTracks().forEach(track => {
         console.log(`Add new track: ${track}`)
-        pc.addTrack(track, localStream);
+        pc.addTrack(track, stream);
     });
 }
 
