@@ -48,24 +48,20 @@ function listener(message) {
 
 const config = null
 
-function prepareSender() {
+async function startSender() {
     pc = new RTCPeerConnection(config)
     pc.onicecandidate = onIceCandidate;
 
-    navigator.mediaDevices.getDisplayMedia().then(
-        onReceivedDisplayStream,
-        onErrorHandle
-    )
-
+    const stream = await navigator.mediaDevices.getDisplayMedia();
+    onReceivedDisplayStream(stream);
+    
     dataChannel = pc.createDataChannel('data-channel');
     dataChannel.onopen = onDataChannelStateChanged;
     dataChannel.onclose = onDataChannelStateChanged;
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
     signalingChannel.addListener(listener);
-}
 
-function startSender() {
     pc.createOffer().then(
         gotOffer,
         onErrorHandle
