@@ -4,6 +4,19 @@ let pc;
 let dataChannel;
 let signalingChannel;
 
+let startSenderButton = document.querySelector('button#startSender');
+let startReceiverButton = document.querySelector('button#startReceiver');
+let sendTextButton = document.querySelector('button#sendButton');
+
+startReceiverButton.onclick = startReceiver;
+startSenderButton.onclick = startSender;
+
+const params = new URLSearchParams(window.location.search)
+const peer_type = params.get('peer')
+
+startSenderButton.style.visibility = (peer_type === 'sender' ? 'visible' : 'hidden');
+startReceiverButton.style.visibility = (peer_type === 'receiver' ? 'visible' : 'hidden');
+
 class SignalingChannel {
     constructor(url) {
         this.socket = io(url, { autoConnect :  false });
@@ -66,6 +79,8 @@ async function startSender() {
         gotOffer,
         onErrorHandle
     )
+
+    sendTextButton.style.visibility = 'visible'
 }
 
 function onReceivedDisplayStream(stream) {

@@ -11,8 +11,15 @@
     <script src="main.js"></script>
 
     <div id="container">
-        <video id="remoteVideo" autoplay playsinline muted></video>
-        <button> Start </button>
+        <video id="remoteVideo" autoplay playsinline muted hidden></video>
+      
+        <div id="send">
+            <textarea id="dataChannelSend" disabled="" placeholder=""></textarea>
+        </div>
+      
+        <button id="startReceiver" hidden> start receiver </button>
+        <button id="startSender" hidden> start sender </button>
+        <button id="sendButton" hidden> send </button>
     </div>
 </body>
 </html>
