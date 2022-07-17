@@ -89,7 +89,7 @@ async function startSender() {
     )
 
     sendTextButton.hidden = false;
-    startReceiverButton.disabled = true;
+    startSenderButton.disabled = true;
     messageArea.disabled = false;
 }
 
@@ -126,7 +126,7 @@ function startReceiver() {
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
     signalingChannel.addListener(listener);
 
-    startSenderButton.disabled = true;
+    startReceiverButton.disabled = true;
 }
 
 function onReceiveTrack(event) {
