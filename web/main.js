@@ -12,6 +12,7 @@ const messageArea = document.querySelector('#messageArea');
 
 startReceiverButton.onclick = startReceiver;
 startSenderButton.onclick = startSender;
+sendTextButton.onclick = sendMessage;
 
 const params = new URLSearchParams(window.location.search)
 const peer_type = params.get('peer')
@@ -127,6 +128,12 @@ function startReceiver() {
     signalingChannel.addListener(listener);
 
     startReceiverButton.disabled = true;
+}
+
+function sendMessage() {
+    const data = messageArea.value;
+    dataChannel.send(data);
+    console.log(`Send message: ${data}`);
 }
 
 function onReceiveTrack(event) {
