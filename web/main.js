@@ -7,6 +7,8 @@ let signalingChannel;
 let startSenderButton = document.querySelector('button#startSender');
 let startReceiverButton = document.querySelector('button#startReceiver');
 let sendTextButton = document.querySelector('button#sendButton');
+const video = document.querySelector('#remoteVideo');
+const messageArea = document.querySelector('#messageArea');
 
 startReceiverButton.onclick = startReceiver;
 startSenderButton.onclick = startSender;
@@ -16,6 +18,9 @@ const peer_type = params.get('peer')
 
 startSenderButton.hidden = !(peer_type === 'sender')
 startReceiverButton.hidden = !(peer_type === 'receiver')
+
+const screenSharingEnabled = params.has('screen_sharing')
+video.hidden = !screenSharingEnabled;
 
 class SignalingChannel {
     constructor(url) {
@@ -65,8 +70,11 @@ async function startSender() {
     pc = new RTCPeerConnection(config)
     pc.onicecandidate = onIceCandidate;
 
-    const stream = await navigator.mediaDevices.getDisplayMedia();
-    onReceivedDisplayStream(stream);
+    if (screenSharingEnabled
+    ) {
+        const stream = await navigator.mediaDevices.getDisplayMedia();
+        onReceivedDisplayStream(stream);
+    }
     
     dataChannel = pc.createDataChannel('data-channel');
     dataChannel.onopen = onDataChannelStateChanged;
@@ -81,10 +89,11 @@ async function startSender() {
     )
 
     sendTextButton.hidden = false;
+    startReceiverButton.disabled = true;
+    messageArea.disabled = false;
 }
 
 function onReceivedDisplayStream(stream) {
-    const video = document.querySelector('#remoteVideo');
     video.srcObject = stream;
 
     stream.getTracks().forEach(track => {
@@ -106,13 +115,18 @@ function onErrorHandle(error) {
 function startReceiver() {
     pc = new RTCPeerConnection(config)
     
-    pc.ontrack = onReceiveTrack;
+    if (screenSharingEnabled
+    ) {
+        pc.ontrack = onReceiveTrack;
+    }
 
     pc.onicecandidate = onIceCandidate;
     pc.ondatachannel = onReceiveDataChannel;
 
     signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
     signalingChannel.addListener(listener);
+
+    startSenderButton.disabled = true;
 }
 
 function onReceiveTrack(event) {
