@@ -177,6 +177,7 @@ function onDataChannelStateChanged() {
 }
 
 function onReceiveMessage(event) {
+    messageArea.value = event.data;
     console.log(`Received Message: ${event.data}`);
 }
 
