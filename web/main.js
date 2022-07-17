@@ -14,8 +14,8 @@ startSenderButton.onclick = startSender;
 const params = new URLSearchParams(window.location.search)
 const peer_type = params.get('peer')
 
-startSenderButton.style.visibility = (peer_type === 'sender' ? 'visible' : 'hidden');
-startReceiverButton.style.visibility = (peer_type === 'receiver' ? 'visible' : 'hidden');
+startSenderButton.hidden = !(peer_type === 'sender')
+startReceiverButton.hidden = !(peer_type === 'receiver')
 
 class SignalingChannel {
     constructor(url) {
@@ -80,7 +80,7 @@ async function startSender() {
         onErrorHandle
     )
 
-    sendTextButton.style.visibility = 'visible'
+    sendTextButton.hidden = false;
 }
 
 function onReceivedDisplayStream(stream) {
