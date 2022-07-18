@@ -23,6 +23,10 @@ startReceiverButton.hidden = !(peer_type === 'receiver')
 const screenSharingEnabled = params.has('screen_sharing')
 video.hidden = !screenSharingEnabled;
 
+const audioEnabled = params.has('audio');
+const videoEnabled = false;
+const mediaEnabled = audioEnabled || videoEnabled;
+
 class SignalingChannel {
     constructor(url) {
         this.socket = io(url, { autoConnect :  false });
@@ -71,10 +75,16 @@ async function startSender() {
     pc = new RTCPeerConnection(config)
     pc.onicecandidate = onIceCandidate;
 
-    if (screenSharingEnabled
-    ) {
+    if (screenSharingEnabled) {
         const stream = await navigator.mediaDevices.getDisplayMedia();
         onReceivedDisplayStream(stream);
+    }
+
+    if (mediaEnabled) {
+        const stream = await navigator.mediaDevices.getUserMedia(
+            {audio: audioEnabled, video: videoEnabled}
+        );
+        onReceiveMediaStream(stream);
     }
     
     dataChannel = pc.createDataChannel('data-channel');
@@ -96,10 +106,17 @@ async function startSender() {
 
 function onReceivedDisplayStream(stream) {
     video.srcObject = stream;
+    addTracksToPeerConnection(stream, pc);
+}
 
+function onReceiveMediaStream(stream) {
+    addTracksToPeerConnection(stream, pc);
+}
+
+function addTracksToPeerConnection(stream, peerConnection) {
     stream.getTracks().forEach(track => {
         console.log(`Add new track: ${track}`)
-        pc.addTrack(track, stream);
+        peerConnection.addTrack(track, stream);
     });
 }
 
@@ -116,8 +133,7 @@ function onErrorHandle(error) {
 function startReceiver() {
     pc = new RTCPeerConnection(config)
     
-    if (screenSharingEnabled
-    ) {
+    if (screenSharingEnabled || mediaEnabled) {
         pc.ontrack = onReceiveTrack;
     }
 
