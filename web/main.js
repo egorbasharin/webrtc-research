@@ -8,6 +8,7 @@ let startSenderButton = document.querySelector('button#startSender');
 let startReceiverButton = document.querySelector('button#startReceiver');
 let sendTextButton = document.querySelector('button#sendButton');
 const video = document.querySelector('#remoteVideo');
+const audio = document.querySelector('#remoteAudio');
 const messageArea = document.querySelector('#messageArea');
 
 startReceiverButton.onclick = startReceiver;
@@ -156,9 +157,15 @@ function onReceiveTrack(event) {
     const track_kind = event.track.kind;
     console.log(`Track of kind ${track_kind} received`);
 
-    const remoteVideo = document.querySelector("#remoteVideo");
     const [remoteStream] = event.streams;
-    remoteVideo.srcObject = remoteStream;
+    if (track_kind === 'video') {
+        const remoteVideo = document.querySelector("#remoteVideo");
+        remoteVideo.srcObject = remoteStream;
+    } 
+    
+    if (track_kind === 'audio') {
+        audio.srcObject = remoteStream;
+    }
 }
 
 function gotAnswer(desc) {
