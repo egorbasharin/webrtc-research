@@ -153,7 +153,8 @@ function sendMessage() {
 }
 
 function onReceiveTrack(event) {
-    console.log('Track received');
+    const track_kind = event.track.kind;
+    console.log(`Track of kind ${track_kind} received`);
 
     const remoteVideo = document.querySelector("#remoteVideo");
     const [remoteStream] = event.streams;
