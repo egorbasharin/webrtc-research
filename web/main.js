@@ -1,4 +1,4 @@
-const SIGNAL_SERVER_URL = "goma.avp.ru:11112"
+const SIGNAL_SERVER_URL = "localhost:11112"
 
 let pc;
 let dataChannel;
@@ -72,7 +72,7 @@ function listener(message) {
 
 const config = null
 
-async function startSender() {
+async function startSender(signal_server_url) {
     pc = new RTCPeerConnection(config)
     pc.onicecandidate = onIceCandidate;
 
@@ -87,12 +87,12 @@ async function startSender() {
         );
         onReceiveMediaStream(stream);
     }
-    
+
     dataChannel = pc.createDataChannel('data-channel');
     dataChannel.onopen = onDataChannelStateChanged;
     dataChannel.onclose = onDataChannelStateChanged;
 
-    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
+    signalingChannel = new SignalingChannel(signal_server_url)
     signalingChannel.addListener(listener);
 
     pc.createOffer().then(
@@ -126,14 +126,14 @@ function gotOffer(desc) {
   console.log(`Offer from pc\n${desc.sdp}`);
   signalingChannel.send({'offer' : desc});
 }
-        
+
 function onErrorHandle(error) {
   console.log('Failed to create session description: ' + error.toString());
 }
 
-function startReceiver() {
+function startReceiver(signal_server_url) {
     pc = new RTCPeerConnection(config)
-    
+
     if (screenSharingEnabled || mediaEnabled) {
         pc.ontrack = onReceiveTrack;
     }
@@ -141,7 +141,7 @@ function startReceiver() {
     pc.onicecandidate = onIceCandidate;
     pc.ondatachannel = onReceiveDataChannel;
 
-    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
+    signalingChannel = new SignalingChannel(signal_server_url);
     signalingChannel.addListener(listener);
 
     startReceiverButton.disabled = true;
@@ -161,8 +161,8 @@ function onReceiveTrack(event) {
     if (track_kind === 'video') {
         const remoteVideo = document.querySelector("#remoteVideo");
         remoteVideo.srcObject = remoteStream;
-    } 
-    
+    }
+
     if (track_kind === 'audio') {
         audio.srcObject = remoteStream;
     }
