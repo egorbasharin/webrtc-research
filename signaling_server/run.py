@@ -1,6 +1,6 @@
 from aiohttp import web
 import socketio
-import ssl
+# import ssl
 
 sio = socketio.AsyncServer(cors_allowed_origins='*')
 app = web.Application()
@@ -24,6 +24,6 @@ async def message(sid, msg):
     await sio.emit('message', msg, room=ROOM, skip_sid=sid)
 
 if __name__ == '__main__':
-    ssl_context = ssl.SSLContext()
-    ssl_context.load_cert_chain("../web/cert.pem", "../web/key.pem")
-    web.run_app(app, port=11112, ssl_context=ssl_context)
+    # ssl_context = ssl.SSLContext()
+    # ssl_context.load_cert_chain("../web/cert.pem", "../web/key.pem")
+    web.run_app(app, port=11112) #, ssl_context=ssl_context)
