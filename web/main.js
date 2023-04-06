@@ -1,4 +1,4 @@
-const SIGNAL_SERVER_URL = "localhost:11112"
+const SIGNAL_SERVER_URL = "52.58.218.62:56560"
 
 let pc;
 let dataChannel;
@@ -70,15 +70,28 @@ function listener(message) {
     console.error(`Unhandled message: ${message}`)
 }
 
-const config = null
+const config = {
+    iceServers: [
+        {
+	    urls: 'turn:openrelay.metered.ca:80?transport=tcp',
+	    username: 'openrelayproject',
+	    credential: 'openrelayproject'
+	}
+    ]
+}
 
-async function startSender(signal_server_url) {
+async function startSender() {
     pc = new RTCPeerConnection(config)
     pc.onicecandidate = onIceCandidate;
 
     if (screenSharingEnabled) {
-        const stream = await navigator.mediaDevices.getDisplayMedia();
-        onReceivedDisplayStream(stream);
+	const stream = await navigator.mediaDevices.getDisplayMedia({
+	    video: {
+                cursor: "always"
+	    },
+	    audio: true
+	});
+	onReceivedDisplayStream(stream);
     }
 
     if (mediaEnabled) {
@@ -92,7 +105,7 @@ async function startSender(signal_server_url) {
     dataChannel.onopen = onDataChannelStateChanged;
     dataChannel.onclose = onDataChannelStateChanged;
 
-    signalingChannel = new SignalingChannel(signal_server_url)
+    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL)
     signalingChannel.addListener(listener);
 
     pc.createOffer().then(
@@ -131,7 +144,7 @@ function onErrorHandle(error) {
   console.log('Failed to create session description: ' + error.toString());
 }
 
-function startReceiver(signal_server_url) {
+function startReceiver() {
     pc = new RTCPeerConnection(config)
 
     if (screenSharingEnabled || mediaEnabled) {
@@ -141,7 +154,7 @@ function startReceiver(signal_server_url) {
     pc.onicecandidate = onIceCandidate;
     pc.ondatachannel = onReceiveDataChannel;
 
-    signalingChannel = new SignalingChannel(signal_server_url);
+    signalingChannel = new SignalingChannel(SIGNAL_SERVER_URL);
     signalingChannel.addListener(listener);
 
     startReceiverButton.disabled = true;
